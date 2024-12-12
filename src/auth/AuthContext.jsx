@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-const BASE_URL = "http://localhost:5000"
+const BASE_URL = import.meta.env.VITE_API_URL
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
