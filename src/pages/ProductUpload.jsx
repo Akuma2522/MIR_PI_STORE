@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL = "http://localhost:5000"
 const ProductUpload = () => {
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -41,7 +41,7 @@ const ProductUpload = () => {
 
       product.image = data.secure_url;
       console.log(product)
-      const response = await fetch(`${BASE_URL}/api/products/upload`, {
+      const response = await fetch(`${BASE_URL}/api/products/`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ const ProductUpload = () => {
         </div>
         <div>
           <label>Product Image:</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
         </div>
         <button type="submit">Upload Product</button>
       </form>

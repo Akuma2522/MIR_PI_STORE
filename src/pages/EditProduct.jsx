@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL = "http://localhost:5000"
 const ProductUpdate = () => {
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');

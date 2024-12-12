@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL = "http://localhost:5000"
 const CheckoutForm = ({ cart, total }) => {
   const stripe = useStripe();
   const elements = useElements();
