@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+const BASE_URL = import.meta.env.VITE_API_URL
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
@@ -14,7 +15,7 @@ const AuthProvider = ({ children }) => {
       console.log("Token: " + token);
       if (token) {
         try {
-          const response = await fetch("http://localhost:5000/api/auth/validate-token", {
+          const response = await fetch(`${BASE_URL}/api/auth/validate-token`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -44,7 +45,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
+      const response = await fetch(`${BASE_URL}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

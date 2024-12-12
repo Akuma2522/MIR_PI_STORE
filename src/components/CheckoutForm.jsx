@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-
+const BASE_URL = import.meta.env.VITE_API_URL
 const CheckoutForm = ({ cart, total }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -13,7 +13,7 @@ const CheckoutForm = ({ cart, total }) => {
     setLoading(true);
 
     // Llama al backend para crear un PaymentIntent
-    const res = await fetch("http://localhost:5000/api/create-payment-intent", {
+    const res = await fetch(`${BASE_URL}/api/create-payment-intent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cart }),

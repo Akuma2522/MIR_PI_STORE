@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
+const BASE_URL = import.meta.env.VITE_API_URL
 const ProductUpdate = () => {
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -17,7 +17,7 @@ const ProductUpdate = () => {
     };
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/${id}`);
+        const response = await fetch(`${BASE_URL}/api/products/${id}`);
         if (response.ok) {
           const product = await response.json();
           setProductName(product.name);
@@ -58,7 +58,7 @@ const ProductUpdate = () => {
 
     try {
       if (productImage && typeof productImage !== 'string') {
-        const responseImage = await fetch('http://localhost:5000/api/products/upload', {
+        const responseImage = await fetch(`${BASE_URL}/api/products/upload`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +71,7 @@ const ProductUpdate = () => {
         product.image = productImage;
       }
 
-      const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

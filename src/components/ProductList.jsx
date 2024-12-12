@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_API_URL
 const ProductList = ({ addToCart }) => {
   const [data, setData] = useState([]);
   const [role, setRole] = useState('');
   const token = localStorage.getItem('token');
 
   const deleteProduct = async (product) => {
-    await fetch(`http://localhost:5000/api/products/${product.id}`, {
+    await fetch(`${BASE_URL}/api/products/${product.id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -21,7 +21,7 @@ const ProductList = ({ addToCart }) => {
 
   useEffect(() => {
     setRole(localStorage.getItem('role'))
-    const url = 'http://localhost:5000/api/products';
+    const url = `${BASE_URL}/api/products`;
     async function products() {
       try {
 
