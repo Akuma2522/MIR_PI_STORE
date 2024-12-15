@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {
@@ -38,7 +38,7 @@ const Login = () => {
           />
         </div>
         <button type="submit">Login</button>
-        <p>Don't have an account?<a href="/register">Register</a></p>
+        <a href="/register">Register</a>
 
       </form>
     </div>

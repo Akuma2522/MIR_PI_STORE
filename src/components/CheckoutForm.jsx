@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-const BASE_URL = import.meta.env.VITE_API_URL
+import { payment } from "../services/payment";
 const CheckoutForm = ({ cart, total }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -13,11 +14,8 @@ const CheckoutForm = ({ cart, total }) => {
     setLoading(true);
 
     // Llama al backend para crear un PaymentIntent
-    const res = await fetch(`${BASE_URL}/api/create-payment-intent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cart }),
-    });
+    const dataCart = JSON.stringify({ cart });
+    const res = await payment(dataCart);
 
     const { clientSecret } = await res.json();
 
@@ -57,8 +55,14 @@ const CheckoutForm = ({ cart, total }) => {
       <button type="submit" disabled={!stripe || loading}>
         {loading ? "Procesando..." : "Pagar"}
       </button>
+
+      <button onClick={() => { window.location.reload() }}>Regresar al Inicio</button>
     </form>
   );
+};
+CheckoutForm.propTypes = {
+  cart: PropTypes.array.isRequired,
+  total: PropTypes.number.isRequired,
 };
 
 export default CheckoutForm;

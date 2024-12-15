@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-const BASE_URL = import.meta.env.VITE_API_URL
+import { createContext, useState, useEffect } from "react";
+import { loginUser, validateUser } from "../services/user";
+import PropTypes from "prop-types";
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
@@ -12,17 +12,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const validateToken = async () => {
       const token = localStorage.getItem("token");
-      console.log("Token: " + token);
       if (token) {
         try {
-          const response = await fetch(`${BASE_URL}/api/auth/validate-token`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
+          console.log(token);
+          const response = await validateUser(token);
           if (response.ok) {
             const data = await response.json();
             setUser(data.user);
@@ -36,31 +29,18 @@ const AuthProvider = ({ children }) => {
           setUser(null);
         }
       }
-
       setLoading(false);
     };
-
     validateToken();
   }, []);
 
   const login = async (credentials) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const token = data.token;
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          localStorage.setItem("role", decodedToken.role); // Extract the role
-        }
-
+      const dataLogin = JSON.stringify(credentials)
+      const response = await loginUser(dataLogin)
+      if (response.status === 200) {
+        const data = await response.data;
+        console.log(data.token);
         localStorage.setItem("token", data.token);
         setUser(data.user);
         return true;
@@ -84,5 +64,9 @@ const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 
 export default AuthProvider;

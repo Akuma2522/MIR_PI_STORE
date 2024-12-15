@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { ValidateRole } from '../services/ValidateRole';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import ProductList from '../components/ProductList';
 import Cart from '../components/Cart';
 import CheckoutForm from '../components/CheckoutForm';
 import { Link } from 'react-router-dom';
-
-// Carga tu clave pública de Stripe
 const stripePromise = loadStripe("pk_test_51QUdnCRwyVq7Qw6eyraXxGwzNMGZN4KbGPEO09PIsEt2Rs4hvx9pJOLnFK61btZg3wn5eBOLz9NOfRMFaoTR9Tr900IVHIvhjP");
 
 function Home() {
@@ -16,15 +15,10 @@ function Home() {
   const [role, setRole] = useState('');
   const [checkout, setCheckout] = useState(false); // Estado para mostrar el formulario de pago
 
-
   useEffect(() => {
-    setRole(localStorage.getItem('role'));
+    setCheckout(false);
+    setRole(ValidateRole());
   }, []);
-
-
-
-
-
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -37,6 +31,10 @@ function Home() {
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });
+  };
+
+  const goCheckout = () => {
+    setCheckout(true);
   };
 
   const removeFromCart = (productId) => {
@@ -64,7 +62,7 @@ function Home() {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
   return (
-    <>
+    <div className="home">
       <header>
         <h1>Mi Tienda Virtual</h1>
         {!role ?
@@ -76,9 +74,6 @@ function Home() {
         {role == "ADMIN" ? <Link to={"/upload"}><button>Subir Producto</button></Link> : <div className="header-cart" onClick={() => { setContadorClick(contadorClick + 1); if (contadorClick % 2 === 0) { setCartVisibility('hidden') } else setCartVisibility('visible') }}>
           🛒 {cart.reduce((total, item) => total + item.quantity, 0)} artículos
         </div>}
-
-
-
       </header>
       <div className="container">
         {!checkout ? (
@@ -90,15 +85,8 @@ function Home() {
               removeFromCart={removeFromCart}
               removeAllOfType={removeAllOfType}
               clearCart={clearCart}
+              goCheckout={goCheckout}
             />
-            {role !== 'ADMIN' ? <button
-              onClick={() => setCheckout(true)}
-              disabled={cart.length === 0}
-              className="checkout-button"
-            >
-              Ir a Pagar (${(calculateTotal()).toFixed(2)})
-            </button> : null}
-
           </>
         ) : (
           <Elements stripe={stripePromise}>
@@ -106,7 +94,7 @@ function Home() {
           </Elements>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

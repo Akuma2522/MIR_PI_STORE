@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-const BASE_URL = import.meta.env.VITE_API_URL
+import { ValidateRole } from '../services/ValidateRole';
+import { updateProduct, uploadImage, getProductById } from '../services/product';
 const ProductUpdate = () => {
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -12,14 +13,14 @@ const ProductUpdate = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('role') === 'USER') {
+    if (ValidateRole() !== 'ADMIN') {
       navigate('/')
     };
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/products/${id}`);
-        if (response.ok) {
-          const product = await response.json();
+        const response = await getProductById(id);
+        if (response.status === 200) {
+          const product = await response.data;
           setProductName(product.name);
           setProductDescription(product.description);
           setProductPrice(product.price);
@@ -34,7 +35,7 @@ const ProductUpdate = () => {
       }
     };
 
-    if (localStorage.getItem('role') === 'USER') {
+    if (ValidateRole() !== 'ADMIN') {
       navigate('/');
     } else {
       fetchProduct();
@@ -52,35 +53,16 @@ const ProductUpdate = () => {
     const product = {
       name: productName,
       description: productDescription,
-      price: productPrice,
+      price: parseFloat(productPrice),
       category: productCategory
     };
 
     try {
-      if (productImage && typeof productImage !== 'string') {
-        const responseImage = await fetch(`${BASE_URL}/api/products/upload`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formImage,
-        });
-        const data = await responseImage.json();
-        product.image = data.secure_url;
-      } else {
-        product.image = productImage;
-      }
-
-      const response = await fetch(`${BASE_URL}/api/products/${id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(product),
-      });
-
-      if (response.ok) {
+      const responseImage = await uploadImage(formImage, token);
+      product.image = responseImage.secure_url;
+      const dataProduct = JSON.stringify(product);
+      const response = await updateProduct(id, dataProduct, token);
+      if (response.status === 200) {
         alert('Product updated successfully!');
         navigate('/');
       } else {

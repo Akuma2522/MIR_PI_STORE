@@ -1,62 +1,62 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { ValidateRole } from "../services/ValidateRole";
 import { Link } from "react-router-dom";
-const BASE_URL = import.meta.env.VITE_API_URL
+import { getProducts, deleteProduct } from "../services/product";
+
 const ProductList = ({ addToCart }) => {
   const [data, setData] = useState([]);
   const [role, setRole] = useState('');
-  const token = localStorage.getItem('token');
 
-  const deleteProduct = async (product) => {
-    await fetch(`${BASE_URL}/api/products/${product.id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(product),
-    });
-    window.location.reload();
+
+  const deleteProductData = async (product) => {
+    const token = localStorage.getItem('token');
+    try {
+      deleteProduct(product.id, token);
+      console.log(`Deleted product with ID: ${product.id}`);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+
   }
 
+  const getProductData = async () => {
+    try {
+      const products = await getProducts();
+      setData(products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  }
 
   useEffect(() => {
-    setRole(localStorage.getItem('role'))
-    const url = `${BASE_URL}/api/products`;
-    async function products() {
-      try {
-
-        const response = await fetch(url);
-        const result = await response.json();
-        console.log(result)
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    }
-    products();
+    setRole(ValidateRole());
+    getProductData();
   }, [])
-  console.log(data)
   return (
     <div className="product-list">
       {data.map((product) => (
         <div key={product.id} className="product-card">
           <img src={product.image} alt={product.name} />
           <h3>{product.name}</h3>
+          <p>Descripción: {product.description}</p>
           <p>Precio: ${product.price}</p>
           {role !== 'ADMIN' ?
             <button onClick={() => addToCart(product)}>Agregar al carrito</button>
             : <div>
               <Link to={`/edit/${product.id}`}><button>Editar</button></Link>
-              <button onClick={() => deleteProduct(product)}  >Eliminar</button>
+              <button onClick={() => deleteProductData(product)}  >Eliminar</button>
             </div>
           }
-
-
         </div>
       ))}
     </div>
   );
 };
+ProductList.propTypes = {
+  addToCart: PropTypes.func.isRequired
+}
 
 
 export default ProductList;

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const BASE_URL = import.meta.env.VITE_API_URL
+import { ValidateRole } from '../services/ValidateRole';
+import { createProduct, uploadImage } from '../services/product';
 const ProductUpload = () => {
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -13,7 +14,7 @@ const ProductUpload = () => {
   };
   const navigate = useNavigate();
   useEffect(() => {
-    if (localStorage.getItem('role') === 'USER') {
+    if (ValidateRole() !== 'ADMIN') {
       navigate('/')
     };
   }, []);
@@ -29,27 +30,11 @@ const ProductUpload = () => {
     }
 
     try {
-      const responseImage = await fetch(`${BASE_URL}/api/products/upload`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formImage,
-
-      });
-      const data = await responseImage.json();
-
-      product.image = data.secure_url;
-      console.log(product)
-      const response = await fetch(`${BASE_URL}/api/products/`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(product),
-      });
-      if (response.ok) {
+      const responseImage = await uploadImage(formImage, token);
+      product.image = responseImage.secure_url;
+      const dataProduct = JSON.stringify(product);
+      const response = await createProduct(dataProduct, token);
+      if (response.status === 201) {
         alert('Product uploaded successfully!');
         setProductName('');
         setProductDescription('');
