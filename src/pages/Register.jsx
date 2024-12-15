@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { registerUser } from '../services/user';
-const UserRegistration = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -76,4 +76,4 @@ const UserRegistration = () => {
   );
 };
 
-export default UserRegistration;
+export default Register;
