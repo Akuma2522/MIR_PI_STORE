@@ -39,7 +39,7 @@ const CheckoutForm = ({ cart, total }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: "1000px", margin: "0 auto" }}>
+    <form onSubmit={handleSubmit} style={{ maxWidth: "1000px", width: "50%", margin: "0 auto", border: "1px solid #ccc", padding: "20px", borderRadius: "5px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}>
       <h2>Finalizar Compra</h2>
       <ul>
         {cart.map((item, index) => (
