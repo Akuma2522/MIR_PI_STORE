@@ -58,8 +58,12 @@ const ProductUpdate = () => {
     };
 
     try {
-      const responseImage = await uploadImage(formImage, token);
-      product.image = responseImage.secure_url;
+      if (productImage && typeof productImage !== 'string') {
+        const responseImage = await uploadImage(formImage, token);
+        product.image = responseImage.secure_url;
+      } else {
+        product.image = productImage;
+      }
       const dataProduct = JSON.stringify(product);
       const response = await updateProduct(id, dataProduct, token);
       if (response.status === 200) {
